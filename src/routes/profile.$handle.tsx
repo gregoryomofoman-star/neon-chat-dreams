@@ -15,7 +15,8 @@ export const Route = createFileRoute("/profile/$handle")({
 });
 
 function Profile() {
-  const { user } = Route.useLoaderData();
+  const { handle } = Route.useParams();
+  const user = Object.values(USERS).find((u) => u.handle === handle)!;
   const unlock = useStore((s) => s.unlock);
   const unlocked = useStore((s) => s.unlocked);
   const open = useStore((s) => s.openCoinSheet);
