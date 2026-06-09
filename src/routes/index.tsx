@@ -126,8 +126,8 @@ function Explore() {
           {/* Character Grid */}
           <div className="px-4 grid grid-cols-2 gap-3">
             {CHARACTERS.map((c) => {
-              const u = USERS[c.handle.split(".")[0].replace("z_sora", "sora").replace("sorax", "sora")] ||
-                USERS[Object.keys(USERS).find((k) => USERS[k].handle === c.handle) || "sora"];
+              const userKey = Object.keys(USERS).find((k) => USERS[k].handle === c.handle) || "sora";
+              const u = USERS[userKey];
               return (
                 <Link
                   key={c.handle}
