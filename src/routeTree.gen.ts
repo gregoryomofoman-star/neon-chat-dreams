@@ -9,13 +9,21 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PremiumRouteImport } from './routes/premium'
 import { Route as MeRouteImport } from './routes/me'
 import { Route as InboxRouteImport } from './routes/inbox'
+import { Route as GenerateRouteImport } from './routes/generate'
 import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as CreateRouteImport } from './routes/create'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProfileHandleRouteImport } from './routes/profile.$handle'
 import { Route as ChatIdRouteImport } from './routes/chat.$id'
 
+const PremiumRoute = PremiumRouteImport.update({
+  id: '/premium',
+  path: '/premium',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MeRoute = MeRouteImport.update({
   id: '/me',
   path: '/me',
@@ -26,9 +34,19 @@ const InboxRoute = InboxRouteImport.update({
   path: '/inbox',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GenerateRoute = GenerateRouteImport.update({
+  id: '/generate',
+  path: '/generate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DiscoverRoute = DiscoverRouteImport.update({
   id: '/discover',
   path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateRoute = CreateRouteImport.update({
+  id: '/create',
+  path: '/create',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,26 +67,35 @@ const ChatIdRoute = ChatIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/create': typeof CreateRoute
   '/discover': typeof DiscoverRoute
+  '/generate': typeof GenerateRoute
   '/inbox': typeof InboxRoute
   '/me': typeof MeRoute
+  '/premium': typeof PremiumRoute
   '/chat/$id': typeof ChatIdRoute
   '/profile/$handle': typeof ProfileHandleRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/create': typeof CreateRoute
   '/discover': typeof DiscoverRoute
+  '/generate': typeof GenerateRoute
   '/inbox': typeof InboxRoute
   '/me': typeof MeRoute
+  '/premium': typeof PremiumRoute
   '/chat/$id': typeof ChatIdRoute
   '/profile/$handle': typeof ProfileHandleRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/create': typeof CreateRoute
   '/discover': typeof DiscoverRoute
+  '/generate': typeof GenerateRoute
   '/inbox': typeof InboxRoute
   '/me': typeof MeRoute
+  '/premium': typeof PremiumRoute
   '/chat/$id': typeof ChatIdRoute
   '/profile/$handle': typeof ProfileHandleRoute
 }
@@ -76,34 +103,59 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/create'
     | '/discover'
+    | '/generate'
     | '/inbox'
     | '/me'
+    | '/premium'
     | '/chat/$id'
     | '/profile/$handle'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/discover' | '/inbox' | '/me' | '/chat/$id' | '/profile/$handle'
+  to:
+    | '/'
+    | '/create'
+    | '/discover'
+    | '/generate'
+    | '/inbox'
+    | '/me'
+    | '/premium'
+    | '/chat/$id'
+    | '/profile/$handle'
   id:
     | '__root__'
     | '/'
+    | '/create'
     | '/discover'
+    | '/generate'
     | '/inbox'
     | '/me'
+    | '/premium'
     | '/chat/$id'
     | '/profile/$handle'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CreateRoute: typeof CreateRoute
   DiscoverRoute: typeof DiscoverRoute
+  GenerateRoute: typeof GenerateRoute
   InboxRoute: typeof InboxRoute
   MeRoute: typeof MeRoute
+  PremiumRoute: typeof PremiumRoute
   ChatIdRoute: typeof ChatIdRoute
   ProfileHandleRoute: typeof ProfileHandleRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/premium': {
+      id: '/premium'
+      path: '/premium'
+      fullPath: '/premium'
+      preLoaderRoute: typeof PremiumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/me': {
       id: '/me'
       path: '/me'
@@ -118,11 +170,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InboxRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/generate': {
+      id: '/generate'
+      path: '/generate'
+      fullPath: '/generate'
+      preLoaderRoute: typeof GenerateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/discover': {
       id: '/discover'
       path: '/discover'
       fullPath: '/discover'
       preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create': {
+      id: '/create'
+      path: '/create'
+      fullPath: '/create'
+      preLoaderRoute: typeof CreateRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -151,12 +217,25 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CreateRoute: CreateRoute,
   DiscoverRoute: DiscoverRoute,
+  GenerateRoute: GenerateRoute,
   InboxRoute: InboxRoute,
   MeRoute: MeRoute,
+  PremiumRoute: PremiumRoute,
   ChatIdRoute: ChatIdRoute,
   ProfileHandleRoute: ProfileHandleRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
